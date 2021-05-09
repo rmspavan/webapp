@@ -22,7 +22,7 @@
     - name: Start the container
       docker_container:
         name: webapp
-        image: "rmspavan/webpp:{{DOCKER_TAG}}"
+        image: "rmspavan/webapp:{{DOCKER_TAG}}"
         state: started
         published_ports:
           - 0.0.0.0:8080:8080
