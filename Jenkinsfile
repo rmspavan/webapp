@@ -1,7 +1,7 @@
 pipeline{
     agent any
     tools {
-      maven 'maven3'
+        maven 'maven3'
     }
     environment {
       DOCKER_TAG = getVersion()
@@ -9,39 +9,37 @@ pipeline{
     stages{
         stage('SCM'){
             steps{
-                git credentialsId: 'github', 
-                    url: 'https://github.com/rmspavan/webapp.git
+                git branch: 'prod', credentialsId: 'github', url: 'https://github.com/rmspavan/webapp.git'
             }
         }
-        
-        stage('Maven Build'){
+    stage('Maven Build'){
             steps{
                 sh "mvn clean package"
             }
         }
         
-        stage('Docker Build'){
+   stage('Docker Build'){
             steps{
                 sh "docker build . -t rmspavan/webapp:${DOCKER_TAG} "
             }
         }
-        
-        stage('DockerHub Push'){
+    stage('DockerHub Push'){
             steps{
-                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerHubPwd')]) {
+                withCredentials([string(credentialsId: 'docker-hub', variable: 'dockerHubPwd')])
+                {
                     sh "docker login -u rmspavan -p ${dockerHubPwd}"
                 }
                 
                 sh "docker push rmspavan/webapp:${DOCKER_TAG} "
             }
         }
-        
-        stage('Docker Deploy'){
+    stage('Docker Deploy'){
             steps{
-              ansiblePlaybook credentialsId: 'dev-server', disableHostKeyChecking: true, extras: "-e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'deploy-docker.yml'
+              ansiblePlaybook credentialsId: 'Deployment-Server', disableHostKeyChecking: true, extras: "-e DOCKER_TAG=${DOCKER_TAG}", installation: 'ansible', inventory: 'dev.inv', playbook: 'deploy-docker.yml'
             }
-        }
+        }    
     }
+    
 }
 
 def getVersion(){
