@@ -1,2 +1,2 @@
 [prod]
-3.108.43.86 ansible_user=ec2-user
+172.31.3.209 ansible_user=ec2-user
